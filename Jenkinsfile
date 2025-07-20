@@ -10,18 +10,21 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
+                echo "Cloning repository..."
                 git branch: 'main', url: 'https://github.com/111nawaz/flask-cicd-project.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
+                echo "Building Docker image..."
                 sh "docker build -t $DOCKER_IMAGE:$IMAGE_TAG ."
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
+                echo "Pushing Docker image to Docker Hub..."
                 withDockerRegistry([credentialsId: "$DOCKER_CREDENTIALS_ID", url: ""]) {
                     sh "docker push $DOCKER_IMAGE:$IMAGE_TAG"
                 }
@@ -30,6 +33,7 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
+                echo "Running Docker container..."
                 sh "docker rm -f flask-container || true"
                 sh "docker run -d --name flask-container -p 5001:5000 $DOCKER_IMAGE:$IMAGE_TAG"
             }
